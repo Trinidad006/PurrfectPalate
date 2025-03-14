@@ -1,0 +1,321 @@
+/* Estilos generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 100px 0;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+.search-box {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Tarjetas de recetas */
+.receta-card {
+    transition: transform 0.3s ease;
+    margin-bottom: 20px;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.receta-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.receta-card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Tarjetas de lugares */
+.lugar-card {
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.lugar-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.lugar-card img {
+    height: 150px;
+    object-fit: cover;
+}
+
+/* Etiquetas */
+.tag {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 5px;
+    background-color: #e9ecef;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    transition: background-color 0.3s ease;
+}
+
+.tag:hover {
+    background-color: #dee2e6;
+    cursor: pointer;
+}
+
+/* Estilos para los modales */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-radius: 15px 15px 0 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+/* Estilos para los formularios */
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Estilos para los botones */
+.navbar .btn-success,
+.navbar .btn-warning {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    color: white !important;
+}
+
+.navbar .btn-success:hover,
+.navbar .btn-warning:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+    color: white !important;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    padding: 8px 20px;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.btn-outline-primary {
+    color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-primary:hover {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+/* Estilos para la barra de navegación */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    background-color: #0d6efd !important;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-brand i {
+    margin-right: 5px;
+}
+
+/* Estilos para las secciones */
+section {
+    padding: 60px 0;
+}
+
+section h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+/* Estilos para las categorías */
+.categoria-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    margin: 5px;
+    background-color: #e9ecef;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.categoria-badge:hover {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.categoria-badge i {
+    margin-right: 5px;
+}
+
+/* Estilos para los likes y comentarios */
+.interacciones {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.interacciones i {
+    margin-right: 5px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.interacciones i:hover {
+    color: #0d6efd;
+}
+
+/* Estilos para la vista de detalles */
+.detalles-container {
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.detalles-imagen {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.detalles-titulo {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.detalles-descripcion {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.detalles-ingredientes,
+.detalles-pasos {
+    margin-bottom: 20px;
+}
+
+.detalles-ingredientes h3,
+.detalles-pasos h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.detalles-ingredientes ul,
+.detalles-pasos ol {
+    padding-left: 20px;
+}
+
+/* Estilos para la galería de imágenes */
+.galeria-imagenes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.galeria-imagen {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.galeria-imagen:hover {
+    transform: scale(1.05);
+}
+
+/* Estilos para el menú del negocio */
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-item-nombre {
+    font-weight: 500;
+}
+
+.menu-item-precio {
+    color: #198754;
+    font-weight: bold;
+}
+
+/* Estilos para las reseñas */
+.resena {
+    padding: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.resena:last-child {
+    border-bottom: none;
+}
+
+.resena-usuario {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.resena-usuario img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.resena-valoracion {
+    color: #ffc107;
+}
+
+.resena-fecha {
+    color: #6c757d;
+    font-size: 0.9rem;
+}

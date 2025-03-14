@@ -1,0 +1,28 @@
+IMÁGENES NECESARIAS:
+
+1. Imagen de fondo para el hero section:
+- Guardar como: img/hero-bg.jpg
+- Recomendado: Una imagen de comida o cocina de alta calidad
+
+2. Imágenes de recetas:
+- img/recetas/tarta-manzana.jpg
+- img/recetas/ensalada-mediterranea.jpg
+
+3. Imágenes de lugares:
+- img/lugares/la-cocina-maria.jpg
+- img/lugares/sushi-express.jpg
+
+4. Imágenes de usuarios:
+- img/usuarios/ana.jpg
+- img/usuarios/carlos.jpg
+
+Puedes usar imágenes de placeholder de:
+https://placeholder.com
+o
+https://picsum.photos
+
+Por ejemplo:
+- Para hero-bg.jpg: https://picsum.photos/1920/1080
+- Para recetas: https://picsum.photos/400/300
+- Para lugares: https://picsum.photos/400/300
+- Para usuarios: https://picsum.photos/100/100 

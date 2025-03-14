@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PurrfectPalate - Tu Comunidad Gastronómica</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-cat"></i> PurrfectPalate
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#recetas">Recetas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#lugares">Lugares</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#categorias">Categorías</a>
+                    </li>
+                    <li class="nav-item dropdown" id="preferenciasDropdown" style="display: none;">
+                        <a class="nav-link dropdown-toggle" href="#" id="preferenciasDropdownLink" role="button" data-bs-toggle="dropdown">
+                            Mis Preferencias
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#bebidas">Bebidas</a></li>
+                            <li><a class="dropdown-item" href="#postres">Postres</a></li>
+                            <li><a class="dropdown-item" href="#comidas-leche">Comidas con Leche</a></li>
+                            <li><a class="dropdown-item" href="#comidas-mar">Comidas de Mar</a></li>
+                            <li><a class="dropdown-item" href="#comidas-pollo">Comidas con Pollo</a></li>
+                            <li><a class="dropdown-item" href="#comidas-carne">Comidas con Carne</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <button class="btn btn-light me-2" id="btnLogin">Iniciar Sesión</button>
+                    <button class="btn btn-outline-light me-2" id="btnRegistro">Registrarse</button>
+                    <button class="btn btn-success me-2" id="btnPublicarReceta">Publicar Receta</button>
+                    <button class="btn btn-warning" id="btnRegistrarNegocio">Registrar Negocio</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section text-center py-5">
+        <div class="container">
+            <h1>Bienvenido/a a PurrfectPalate</h1>
+            <p class="lead">Tu comunidad gastronómica favorita</p>
+            <div class="search-box mt-4">
+                <input type="text" class="form-control form-control-lg" placeholder="Buscar recetas o lugares...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Registro -->
+    <div class="modal fade" id="registroModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registro en PurrfectPalate</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registroForm">
+                        <div class="mb-3">
+                            <label class="form-label">Correo Electrónico (Gmail)</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirmar Contraseña</label>
+                            <input type="password" class="form-control" name="confirmPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de Usuario</label>
+                            <input type="text" class="form-control" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Preferencias Alimenticias</label>
+                            <select class="form-select" name="preferencias" multiple>
+                                <option value="ninguna">Ninguna preferencia</option>
+                                <option value="vegano">Vegano</option>
+                                <option value="vegetariano">Vegetariano</option>
+                                <option value="sin-gluten">Sin Gluten</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Alergias</label>
+                            <select class="form-select" name="alergias" multiple>
+                                <option value="ninguna">Ninguna alergia</option>
+                                <option value="lacteos">Lácteos</option>
+                                <option value="frutos-secos">Frutos Secos</option>
+                                <option value="mariscos">Mariscos</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Registrarse</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Inicio de Sesión -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Iniciar Sesión en PurrfectPalate</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Perfil de Usuario -->
+    <div class="modal fade" id="perfilModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Mi Perfil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Información del Usuario -->
+                        <div class="col-md-4">
+                            <div class="card mb-3">
+                                <div class="card-body text-center">
+                                    <img src="img/usuarios/default-avatar.png" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                                    <h5 class="card-title" id="perfilNombre">Nombre de Usuario</h5>
+                                    <p class="card-text" id="perfilEmail">email@ejemplo.com</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recetas del Usuario -->
+                        <div class="col-md-8">
+                            <h6 class="mb-3">Mis Recetas</h6>
+                            <div id="recetasUsuario" class="list-group mb-3">
+                                <!-- Las recetas se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                        
+                        <!-- Restaurantes del Usuario -->
+                        <div class="col-md-12 mt-3">
+                            <h6 class="mb-3">Mis Restaurantes</h6>
+                            <div id="restaurantesUsuario" class="list-group">
+                                <!-- Los restaurantes se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Publicar Receta -->
+    <div class="modal fade" id="publicarRecetaModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Publicar Nueva Receta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="publicarRecetaForm">
+                        <div class="mb-3">
+                            <label class="form-label">Título de la Receta</label>
+                            <input type="text" class="form-control" name="titulo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" name="descripcion" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Imagen de la Receta (opcional)</label>
+                            <input type="file" class="form-control" name="imagen" accept="image/*">
+                            <small class="text-muted">Si no subes una imagen, se usará una imagen por defecto.</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select" name="categoria" required>
+                                <option value="postres">Postres</option>
+                                <option value="almuerzos">Almuerzos</option>
+                                <option value="desayunos">Desayunos</option>
+                                <option value="cenas">Cenas</option>
+                                <option value="bebidas">Bebidas</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tiempo de Preparación</label>
+                            <input type="text" class="form-control" name="tiempoPreparacion" placeholder="Ej: 45 minutos" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dificultad</label>
+                            <select class="form-select" name="dificultad" required>
+                                <option value="facil">Fácil</option>
+                                <option value="media">Media</option>
+                                <option value="dificil">Difícil</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ingredientes (uno por línea)</label>
+                            <textarea class="form-control" name="ingredientes" rows="5" placeholder="Ej:&#10;200g de harina&#10;100g de azúcar" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pasos (uno por línea)</label>
+                            <textarea class="form-control" name="pasos" rows="5" placeholder="Ej:&#10;1. Precalentar el horno&#10;2. Mezclar los ingredientes" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Etiquetas (separadas por comas)</label>
+                            <input type="text" class="form-control" name="etiquetas" placeholder="Ej: postre, dulce, horneado">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Publicar Receta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Registro de Negocio -->
+    <div class="modal fade" id="registroNegocioModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Tu Negocio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registroNegocioForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del Negocio</label>
+                            <input type="text" class="form-control" name="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" name="descripcion" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Dirección</label>
+                            <input type="text" class="form-control" name="direccion" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" name="telefono" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Horario de Apertura</label>
+                            <input type="text" class="form-control" name="horario" placeholder="Ej: L-V: 12:00-23:00" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select" name="categoria" required>
+                                <option value="restaurante">Restaurante</option>
+                                <option value="cafeteria">Cafetería</option>
+                                <option value="bar">Bar</option>
+                                <option value="panaderia">Panadería</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rango de Precios</label>
+                            <select class="form-select" name="precio" required>
+                                <option value="€">€ (Económico)</option>
+                                <option value="€€">€€ (Moderado)</option>
+                                <option value="€€€">€€€ (Lujo)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="imagenNegocio" class="form-label">Imagen del Negocio (opcional)</label>
+                            <input type="file" class="form-control" id="imagenNegocio" name="imagen" accept="image/*">
+                            <small class="text-muted">Si no subes una imagen, se usará una imagen por defecto</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Menú (opcional)</label>
+                            <textarea class="form-control" name="menu" rows="5" placeholder="Lista los platos principales con sus precios"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Etiquetas (separadas por comas)</label>
+                            <input type="text" class="form-control" name="etiquetas" placeholder="Ej: casero, tradicional, familiar">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Registrar Negocio</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Recetas -->
+    <section id="recetas" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Recetas Destacadas</h2>
+            <div class="row" id="recetasContainer">
+                <!-- Las recetas se cargarán dinámicamente aquí -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Lugares -->
+    <section id="lugares" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-4">Lugares Recomendados</h2>
+            <div class="row" id="lugaresContainer">
+                <!-- Los lugares se cargarán dinámicamente aquí -->
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 
