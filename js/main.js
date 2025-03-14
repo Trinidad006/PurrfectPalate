@@ -89,6 +89,16 @@ function configurarEventListeners() {
     buscador.addEventListener('input', (e) => {
         filtrarContenido(e.target.value);
     });
+
+    // Escuchar el evento de comentario agregado
+    document.addEventListener('comentarioAgregado', (e) => {
+        const { tipo, id } = e.detail;
+        if (tipo === 'receta') {
+            verDetallesReceta(id);
+        } else if (tipo === 'lugar') {
+            verDetallesLugar(id);
+        }
+    });
 }
 
 // Funciones de carga de contenido
@@ -137,7 +147,7 @@ function crearTarjetaReceta(receta) {
                     <span class="badge bg-primary">${receta.categoria}</span>
                     <div class="interacciones">
                         <i class="fas fa-heart"></i> ${receta.likes}
-                        <i class="fas fa-comment"></i> ${receta.comentarios}
+                        <i class="fas fa-comment"></i> ${Array.isArray(receta.comentarios) ? receta.comentarios.length : receta.comentarios}
                     </div>
                 </div>
                 <div class="mt-2">
@@ -215,7 +225,11 @@ function procesarRegistro() {
         email: formData.get('email'),
         password: formData.get('password'),
         preferencias: Array.from(formData.getAll('preferencias')),
-        alergias: Array.from(formData.getAll('alergias'))
+        alergias: Array.from(formData.getAll('alergias')),
+        favoritos: {
+            recetas: [],
+            restaurantes: []
+        }
     };
     
     // Agregar usuario al JSON
@@ -351,213 +365,483 @@ function actualizarVistaFiltrada(recetas, lugares) {
 function verDetallesReceta(id) {
     const receta = data.recetas.find(r => r.id === id);
     if (!receta) {
-        alert('No se encontró la receta');
+        alert('Receta no encontrada');
         return;
     }
 
-    // Crear el contenido del modal
-    const contenido = `
-        <div class="modal-header">
-            <h5 class="modal-title">${receta.titulo}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-            <img src="${receta.imagen}" class="img-fluid mb-3" alt="${receta.titulo}">
-            <p class="lead">${receta.descripcion}</p>
-            
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <strong>Tiempo de Preparación:</strong> ${receta.tiempoPreparacion}
-                </div>
-                <div class="col-md-4">
-                    <strong>Dificultad:</strong> ${receta.dificultad}
-                </div>
-                <div class="col-md-4">
-                    <strong>Categoría:</strong> ${receta.categoria}
-                </div>
+    const modalContent = document.getElementById('detallesRecetaModalContent');
+    modalContent.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">${receta.titulo}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-
-            <h6>Ingredientes:</h6>
-            <ul>
-                ${receta.ingredientes.map(ing => `<li>${ing}</li>`).join('')}
-            </ul>
-
-            <h6>Pasos:</h6>
-            <ol>
-                ${receta.pasos.map(paso => `<li>${paso}</li>`).join('')}
-            </ol>
-
-            <div class="mt-3">
-                <strong>Etiquetas:</strong>
-                ${receta.etiquetas.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join('')}
-            </div>
-
-            <div class="mt-3">
-                <strong>Autor:</strong> ${receta.autor}
-            </div>
-
-            <div class="mt-3">
-                <button class="btn btn-outline-primary me-2">
-                    <i class="fas fa-heart"></i> ${receta.likes}
-                </button>
-                <button class="btn btn-outline-primary">
-                    <i class="fas fa-comment"></i> ${receta.comentarios}
-                </button>
+            <div class="modal-body">
+                <img src="${receta.imagen}" alt="${receta.titulo}" class="img-fluid mb-3">
+                <p>${receta.descripcion}</p>
+                <div class="receta-meta">
+                    <span><i class="fas fa-clock"></i> ${receta.tiempoPreparacion}</span>
+                    <span><i class="fas fa-signal"></i> ${receta.dificultad}</span>
+                </div>
+                <h3>Ingredientes:</h3>
+                <ul>
+                    ${receta.ingredientes.map(ing => `<li>${ing}</li>`).join('')}
+                </ul>
+                <h3>Pasos:</h3>
+                <ol>
+                    ${receta.pasos.map(paso => `<li>${paso}</li>`).join('')}
+                </ol>
+                <div class="receta-interacciones">
+                    <button onclick="toggleMeGusta('receta', ${receta.id})" class="btn btn-outline-danger">
+                        <i class="fas fa-heart"></i> ${receta.likes || 0}
+                    </button>
+                    <button onclick="toggleFavorito('recetas', ${receta.id})" class="btn btn-outline-warning">
+                        <i class="fas fa-star"></i>
+                    </button>
+                    ${receta.autor === usuarioActual?.nombre ? `
+                        <button onclick="eliminarReceta(${receta.id})" class="btn btn-outline-danger">
+                            <i class="fas fa-trash"></i> Eliminar Receta
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="comentarios mt-4">
+                    <h3>Comentarios</h3>
+                    <div class="comentarios-lista">
+                        ${Array.isArray(receta.comentarios) && receta.comentarios.length > 0 
+                            ? receta.comentarios.map((com, index) => `
+                                <div class="comentario p-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <p class="mb-1">${com.texto}</p>
+                                            <small class="text-muted">${new Date(com.fecha).toLocaleDateString()}</small>
+                                        </div>
+                                        ${com.usuario === usuarioActual?.email ? `
+                                            <button onclick="eliminarComentario('receta', ${receta.id}, ${index})" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('') 
+                            : '<p>No hay comentarios aún</p>'}
+                    </div>
+                    <form onsubmit="event.preventDefault(); agregarComentario('receta', ${receta.id}, this.comentario.value); this.reset();" class="mt-3">
+                        <div class="mb-3">
+                            <textarea name="comentario" class="form-control" placeholder="Escribe un comentario..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Comentar</button>
+                    </form>
+                </div>
             </div>
         </div>
     `;
 
-    // Crear y mostrar el modal
-    const modal = document.createElement('div');
-    modal.className = 'modal fade';
-    modal.id = 'detallesRecetaModal';
-    modal.innerHTML = `
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                ${contenido}
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-    const modalInstance = new bootstrap.Modal(modal);
-    modalInstance.show();
-
-    // Eliminar el modal cuando se cierre
-    modal.addEventListener('hidden.bs.modal', () => {
-        document.body.removeChild(modal);
-    });
+    const modal = new bootstrap.Modal(document.getElementById('detallesRecetaModal'));
+    modal.show();
 }
 
 function verDetallesLugar(id) {
-    // Implementar vista de detalles de lugar
-    console.log('Ver detalles de lugar:', id);
+    const lugar = data.lugares.find(l => l.id === id);
+    if (!lugar) {
+        alert('Lugar no encontrado');
+        return;
+    }
+
+    const modalContent = document.getElementById('detallesLugarModalContent');
+    modalContent.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">${lugar.nombre}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img src="${lugar.imagen}" alt="${lugar.nombre}" class="img-fluid mb-3">
+                <p>${lugar.descripcion}</p>
+                <div class="lugar-meta">
+                    <span><i class="fas fa-utensils"></i> ${lugar.categoria}</span>
+                    <span><i class="fas fa-dollar-sign"></i> ${lugar.precio}</span>
+                    <span><i class="fas fa-clock"></i> ${lugar.horario}</span>
+                </div>
+                <p><strong><i class="fas fa-map-marker-alt"></i> Dirección:</strong> ${lugar.direccion}</p>
+                <p><strong><i class="fas fa-phone"></i> Teléfono:</strong> ${lugar.telefono}</p>
+                ${lugar.menu ? `<h3>Menú:</h3><p>${lugar.menu}</p>` : ''}
+                <div class="lugar-interacciones">
+                    <button onclick="toggleMeGusta('lugar', ${lugar.id})" class="btn btn-outline-danger">
+                        <i class="fas fa-heart"></i> ${lugar.valoracion || 0}
+                    </button>
+                    <button onclick="toggleFavorito('restaurantes', ${lugar.id})" class="btn btn-outline-warning">
+                        <i class="fas fa-star"></i>
+                    </button>
+                    ${lugar.autor === usuarioActual?.nombre ? `
+                        <button onclick="eliminarLugar(${lugar.id})" class="btn btn-outline-danger">
+                            <i class="fas fa-trash"></i> Eliminar Lugar
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="comentarios mt-4">
+                    <h3>Reseñas</h3>
+                    <div class="comentarios-lista">
+                        ${Array.isArray(lugar.reseñas) && lugar.reseñas.length > 0
+                            ? lugar.reseñas.map((reseña, index) => `
+                                <div class="comentario p-3 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <p class="mb-1">${reseña.texto}</p>
+                                            <small class="text-muted">${new Date(reseña.fecha).toLocaleDateString()}</small>
+                                        </div>
+                                        ${reseña.usuario === usuarioActual?.email ? `
+                                            <button onclick="eliminarComentario('lugar', ${lugar.id}, ${index})" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')
+                            : '<p>No hay reseñas aún</p>'}
+                    </div>
+                    <form onsubmit="event.preventDefault(); agregarComentario('lugar', ${lugar.id}, this.comentario.value); this.reset();" class="mt-3">
+                        <div class="mb-3">
+                            <textarea name="comentario" class="form-control" placeholder="Escribe una reseña..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Comentar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const modal = new bootstrap.Modal(document.getElementById('detallesLugarModal'));
+    modal.show();
+}
+
+function mostrarPerfil() {
+    if (!usuarioActual) {
+        alert('Debes iniciar sesión para ver tu perfil');
+        return;
+    }
+
+    const modalContent = document.getElementById('perfilModalContent');
+    modalContent.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Mi Perfil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="perfil-info">
+                    <p><strong>Nombre:</strong> ${usuarioActual.nombre}</p>
+                    <p><strong>Email:</strong> ${usuarioActual.email}</p>
+                    <p><strong>Preferencias:</strong> ${usuarioActual.preferencias ? usuarioActual.preferencias.join(', ') : 'Ninguna'}</p>
+                    <p><strong>Alergias:</strong> ${usuarioActual.alergias ? usuarioActual.alergias.join(', ') : 'Ninguna'}</p>
+                </div>
+                <div class="favoritos mt-4">
+                    <h3>Mis Favoritos</h3>
+                    <div class="favoritos-recetas">
+                        <h4>Recetas Favoritas</h4>
+                        ${usuarioActual.favoritos && usuarioActual.favoritos.recetas && usuarioActual.favoritos.recetas.length > 0 
+                            ? data.categorias.map(categoria => {
+                                const recetasFavoritas = data.recetas.filter(r => 
+                                    usuarioActual.favoritos.recetas.includes(r.id) && 
+                                    r.categoria === categoria.nombre
+                                );
+                                return recetasFavoritas.length > 0 ? `
+                                    <div class="categoria-favoritos mb-3">
+                                        <h5><i class="${categoria.icono}"></i> ${categoria.nombre}</h5>
+                                        <div class="list-group">
+                                            ${recetasFavoritas.map(r => `
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>${r.titulo}</span>
+                                                    <button onclick="toggleFavorito('recetas', ${r.id})" class="btn btn-sm btn-outline-danger">
+                                                        <i class="fas fa-trash"></i> Quitar de favoritos
+                                                    </button>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : '';
+                            }).join('')
+                            : '<p>No tienes recetas favoritas</p>'}
+                    </div>
+                    <div class="favoritos-restaurantes mt-4">
+                        <h4>Restaurantes Favoritos</h4>
+                        ${usuarioActual.favoritos && usuarioActual.favoritos.restaurantes && usuarioActual.favoritos.restaurantes.length > 0
+                            ? data.lugares.filter(l => usuarioActual.favoritos.restaurantes.includes(l.id))
+                                .map(l => `
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>${l.nombre}</span>
+                                        <button onclick="toggleFavorito('restaurantes', ${l.id})" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i> Quitar de favoritos
+                                        </button>
+                                    </div>
+                                `).join('')
+                            : '<p>No tienes restaurantes favoritos</p>'}
+                    </div>
+                </div>
+                <button onclick="cerrarSesion()" class="btn btn-danger mt-3">Cerrar Sesión</button>
+            </div>
+        </div>
+    `;
+
+    const modal = new bootstrap.Modal(document.getElementById('perfilModal'));
+    modal.show();
 }
 
 function actualizarUIUsuario() {
     const btnLogin = document.getElementById('btnLogin');
     const btnRegistro = document.getElementById('btnRegistro');
-    const preferenciasDropdown = document.getElementById('preferenciasDropdown');
-    
+    const btnPublicarReceta = document.getElementById('btnPublicarReceta');
+    const btnRegistrarNegocio = document.getElementById('btnRegistrarNegocio');
+
     if (usuarioActual) {
         btnLogin.textContent = 'Mi Perfil';
         btnRegistro.style.display = 'none';
-        preferenciasDropdown.style.display = 'block';
+        btnPublicarReceta.style.display = 'block';
+        btnRegistrarNegocio.style.display = 'block';
     } else {
         btnLogin.textContent = 'Iniciar Sesión';
-        btnRegistro.style.display = 'inline-block';
-        preferenciasDropdown.style.display = 'none';
+        btnRegistro.style.display = 'block';
+        btnPublicarReceta.style.display = 'none';
+        btnRegistrarNegocio.style.display = 'none';
     }
 }
 
-// Funciones de perfil
-function mostrarPerfil() {
-    if (!usuarioActual) {
-        alert('Debes iniciar sesión para ver tu perfil');
-        modalLogin.show();
-        return;
+function cerrarSesion() {
+    usuarioActual = null;
+    actualizarUIUsuario();
+    const modal = bootstrap.Modal.getInstance(document.getElementById('perfilModal'));
+    if (modal) {
+        modal.hide();
     }
-    
-    // Actualizar información del usuario
-    document.getElementById('perfilNombre').textContent = usuarioActual.nombre;
-    document.getElementById('perfilEmail').textContent = usuarioActual.email;
-    
-    // Cargar recetas del usuario
-    cargarRecetasUsuario();
-    
-    // Cargar restaurantes del usuario
-    cargarRestaurantesUsuario();
-    
-    // Mostrar el modal
-    modalPerfil.show();
+    alert('Sesión cerrada');
 }
 
-function cargarRecetasUsuario() {
-    const container = document.getElementById('recetasUsuario');
-    container.innerHTML = '';
+function mostrarFormularioReceta() {
+    const modal = document.getElementById('formularioRecetaModal');
+    const modalContent = document.getElementById('formularioRecetaModalContent');
     
-    // Filtrar recetas del usuario actual
-    const recetasUsuario = data.recetas.filter(receta => receta.autor === usuarioActual.nombre);
+    modalContent.innerHTML = `
+        <div class="modal-header">
+            <h5 class="modal-title">Agregar Nueva Receta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <form id="formularioReceta" onsubmit="guardarReceta(event)">
+                <div class="mb-3">
+                    <label for="tituloReceta" class="form-label">Título</label>
+                    <input type="text" class="form-control" id="tituloReceta" required>
+                </div>
+                <div class="mb-3">
+                    <label for="descripcionReceta" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="descripcionReceta" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="imagenReceta" class="form-label">Imagen de la Receta</label>
+                    <input type="file" class="form-control" id="imagenReceta" accept="image/*" required>
+                    <div id="previewImagenReceta" class="mt-2"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="categoriaReceta" class="form-label">Categoría</label>
+                    <select class="form-select" id="categoriaReceta" required>
+                        ${data.categorias.map(cat => `<option value="${cat.nombre}">${cat.nombre}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="tiempoPreparacion" class="form-label">Tiempo de Preparación</label>
+                    <input type="text" class="form-control" id="tiempoPreparacion" required>
+                </div>
+                <div class="mb-3">
+                    <label for="dificultad" class="form-label">Dificultad</label>
+                    <select class="form-select" id="dificultad" required>
+                        <option value="Fácil">Fácil</option>
+                        <option value="Media">Media</option>
+                        <option value="Difícil">Difícil</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="ingredientes" class="form-label">Ingredientes (uno por línea)</label>
+                    <textarea class="form-control" id="ingredientes" rows="5" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="pasos" class="form-label">Pasos (uno por línea)</label>
+                    <textarea class="form-control" id="pasos" rows="5" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="etiquetas" class="form-label">Etiquetas (separadas por comas)</label>
+                    <input type="text" class="form-control" id="etiquetas">
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Receta</button>
+            </form>
+        </div>
+    `;
+
+    // Agregar evento para previsualizar la imagen
+    const inputImagen = document.getElementById('imagenReceta');
+    const previewImagen = document.getElementById('previewImagenReceta');
     
-    if (recetasUsuario.length === 0) {
-        container.innerHTML = '<p class="text-muted">No has publicado ninguna receta aún.</p>';
-        return;
-    }
-    
-    recetasUsuario.forEach(receta => {
-        const div = document.createElement('div');
-        div.className = 'list-group-item d-flex justify-content-between align-items-center';
-        div.innerHTML = `
-            <div>
-                <h6 class="mb-1">${receta.titulo}</h6>
-                <small class="text-muted">${receta.categoria}</small>
-            </div>
-            <div>
-                <button class="btn btn-sm btn-outline-primary me-2" onclick="verDetallesReceta(${receta.id})">
-                    Ver
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="eliminarReceta(${receta.id})">
-                    Eliminar
-                </button>
-            </div>
-        `;
-        container.appendChild(div);
+    inputImagen.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImagen.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="max-height: 200px;">`;
+            }
+            reader.readAsDataURL(file);
+        }
     });
+
+    modal.classList.add('show');
+    modal.style.display = 'block';
 }
 
-function cargarRestaurantesUsuario() {
-    const container = document.getElementById('restaurantesUsuario');
-    container.innerHTML = '';
+function guardarReceta(event) {
+    event.preventDefault();
     
-    // Filtrar restaurantes del usuario actual
-    const restaurantesUsuario = data.lugares.filter(lugar => lugar.autor === usuarioActual.nombre);
+    const imagenInput = document.getElementById('imagenReceta');
+    const imagenFile = imagenInput.files[0];
     
-    if (restaurantesUsuario.length === 0) {
-        container.innerHTML = '<p class="text-muted">No has registrado ningún restaurante aún.</p>';
+    if (!imagenFile) {
+        alert('Por favor, selecciona una imagen para la receta');
         return;
     }
+
+    // Convertir la imagen a base64
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const nuevaReceta = {
+            titulo: document.getElementById('tituloReceta').value,
+            descripcion: document.getElementById('descripcionReceta').value,
+            imagen: e.target.result, // Guardamos la imagen en base64
+            categoria: document.getElementById('categoriaReceta').value,
+            tiempoPreparacion: document.getElementById('tiempoPreparacion').value,
+            dificultad: document.getElementById('dificultad').value,
+            ingredientes: document.getElementById('ingredientes').value.split('\n').filter(i => i.trim()),
+            pasos: document.getElementById('pasos').value.split('\n').filter(p => p.trim()),
+            etiquetas: document.getElementById('etiquetas').value.split(',').map(e => e.trim()).filter(e => e)
+        };
+
+        if (agregarReceta(nuevaReceta)) {
+            const modal = document.getElementById('formularioRecetaModal');
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            alert('Receta agregada correctamente');
+        }
+    };
+    reader.readAsDataURL(imagenFile);
+}
+
+function mostrarFormularioLugar() {
+    const modal = document.getElementById('formularioLugarModal');
+    const modalContent = document.getElementById('formularioLugarModalContent');
     
-    restaurantesUsuario.forEach(restaurante => {
-        const div = document.createElement('div');
-        div.className = 'list-group-item d-flex justify-content-between align-items-center';
-        div.innerHTML = `
-            <div>
-                <h6 class="mb-1">${restaurante.nombre}</h6>
-                <small class="text-muted">${restaurante.categoria}</small>
-            </div>
-            <div>
-                <button class="btn btn-sm btn-outline-primary me-2" onclick="verDetallesLugar(${restaurante.id})">
-                    Ver
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="eliminarRestaurante(${restaurante.id})">
-                    Eliminar
-                </button>
-            </div>
-        `;
-        container.appendChild(div);
+    modalContent.innerHTML = `
+        <div class="modal-header">
+            <h5 class="modal-title">Agregar Nuevo Lugar</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <form id="formularioLugar" onsubmit="guardarLugar(event)">
+                <div class="mb-3">
+                    <label for="nombreLugar" class="form-label">Nombre del Lugar</label>
+                    <input type="text" class="form-control" id="nombreLugar" required>
+                </div>
+                <div class="mb-3">
+                    <label for="descripcionLugar" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="descripcionLugar" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="imagenLugar" class="form-label">Imagen del Lugar</label>
+                    <input type="file" class="form-control" id="imagenLugar" accept="image/*" required>
+                    <div id="previewImagenLugar" class="mt-2"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="categoriaLugar" class="form-label">Categoría</label>
+                    <select class="form-select" id="categoriaLugar" required>
+                        <option value="Restaurante">Restaurante</option>
+                        <option value="Café">Café</option>
+                        <option value="Bar">Bar</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="precio" class="form-label">Rango de Precio</label>
+                    <select class="form-select" id="precio" required>
+                        <option value="€">€ (Económico)</option>
+                        <option value="€€">€€ (Medio)</option>
+                        <option value="€€€">€€€ (Alto)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="horario" class="form-label">Horario</label>
+                    <input type="text" class="form-control" id="horario" required>
+                </div>
+                <div class="mb-3">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input type="tel" class="form-control" id="telefono" required>
+                </div>
+                <div class="mb-3">
+                    <label for="direccion" class="form-label">Dirección</label>
+                    <input type="text" class="form-control" id="direccion" required>
+                </div>
+                <div class="mb-3">
+                    <label for="etiquetasLugar" class="form-label">Etiquetas (separadas por comas)</label>
+                    <input type="text" class="form-control" id="etiquetasLugar">
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Lugar</button>
+            </form>
+        </div>
+    `;
+
+    // Agregar evento para previsualizar la imagen
+    const inputImagen = document.getElementById('imagenLugar');
+    const previewImagen = document.getElementById('previewImagenLugar');
+    
+    inputImagen.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImagen.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="max-height: 200px;">`;
+            }
+            reader.readAsDataURL(file);
+        }
     });
+
+    modal.classList.add('show');
+    modal.style.display = 'block';
 }
 
-function eliminarReceta(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta receta?')) {
-        // Eliminar la receta del array
-        data.recetas = data.recetas.filter(receta => receta.id !== id);
-        // Guardar cambios
-        guardarDatos();
-        // Actualizar la vista
-        cargarRecetas();
-        cargarRecetasUsuario();
+function guardarLugar(event) {
+    event.preventDefault();
+    
+    const imagenInput = document.getElementById('imagenLugar');
+    const imagenFile = imagenInput.files[0];
+    
+    if (!imagenFile) {
+        alert('Por favor, selecciona una imagen para el lugar');
+        return;
     }
-}
 
-function eliminarRestaurante(id) {
-    if (confirm('¿Estás seguro de que deseas eliminar este restaurante?')) {
-        // Eliminar el restaurante del array
-        data.lugares = data.lugares.filter(lugar => lugar.id !== id);
-        // Guardar cambios
-        guardarDatos();
-        // Actualizar la vista
-        cargarLugares();
-        cargarRestaurantesUsuario();
-    }
-} 
+    // Convertir la imagen a base64
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const nuevoLugar = {
+            nombre: document.getElementById('nombreLugar').value,
+            descripcion: document.getElementById('descripcionLugar').value,
+            imagen: e.target.result, // Guardamos la imagen en base64
+            categoria: document.getElementById('categoriaLugar').value,
+            precio: document.getElementById('precio').value,
+            horario: document.getElementById('horario').value,
+            telefono: document.getElementById('telefono').value,
+            direccion: document.getElementById('direccion').value,
+            etiquetas: document.getElementById('etiquetasLugar').value.split(',').map(e => e.trim()).filter(e => e)
+        };
+
+        if (agregarLugar(nuevoLugar)) {
+            const modal = document.getElementById('formularioLugarModal');
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            alert('Lugar agregado correctamente');
+        }
+    };
+    reader.readAsDataURL(imagenFile);
+}

@@ -5,21 +5,49 @@ body {
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/hero-bg.jpg');
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../img/hero-bg.jpg');
     background-size: cover;
     background-position: center;
+    background-attachment: fixed;
     color: white;
-    padding: 100px 0;
+    padding: 150px 0;
+    text-align: center;
+    position: relative;
 }
 
 .hero-section h1 {
-    font-size: 3.5rem;
-    margin-bottom: 1rem;
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: bold;
+}
+
+.hero-section .lead {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .search-box {
     max-width: 600px;
     margin: 0 auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.search-box input {
+    border: 2px solid #ddd;
+    padding: 15px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 /* Tarjetas de recetas */
@@ -318,4 +346,164 @@ section h2 {
 .resena-fecha {
     color: #6c757d;
     font-size: 0.9rem;
+}
+
+/* Estilos para botones de interacción */
+.btn-interaccion {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    margin: 0 5px;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s;
+}
+
+.btn-interaccion:hover {
+    color: #ff6b6b;
+}
+
+.btn-interaccion i {
+    margin-right: 5px;
+}
+
+/* Estilos para modales */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.modal-content img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Estilos para comentarios */
+.comentarios {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.comentarios-lista {
+    margin-bottom: 20px;
+}
+
+.comentario {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.comentario small {
+    color: #666;
+}
+
+.comentarios form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comentarios textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.comentarios button {
+    align-self: flex-end;
+    padding: 8px 16px;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.comentarios button:hover {
+    background-color: #ff5252;
+}
+
+/* Estilos para meta información */
+.receta-meta, .lugar-meta {
+    display: flex;
+    gap: 15px;
+    margin: 10px 0;
+    color: #666;
+}
+
+.receta-meta span, .lugar-meta span {
+    background-color: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.perfil-info {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.perfil-info p {
+    margin: 10px 0;
+}
+
+.favoritos {
+    margin: 20px 0;
+}
+
+.favoritos-recetas,
+.favoritos-restaurantes {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.favoritos h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.favoritos p {
+    margin: 5px 0;
+    color: #666;
 }

@@ -64,49 +64,74 @@
         </div>
     </div>
 
+    <!-- Modal de Perfil -->
+    <div class="modal fade" id="perfilModal" tabindex="-1" aria-labelledby="perfilModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div id="perfilModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalles de Receta -->
+    <div class="modal fade" id="detallesRecetaModal" tabindex="-1" aria-labelledby="detallesRecetaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div id="detallesRecetaModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalles de Lugar -->
+    <div class="modal fade" id="detallesLugarModal" tabindex="-1" aria-labelledby="detallesLugarModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div id="detallesLugarModalContent"></div>
+        </div>
+    </div>
+
     <!-- Modal de Registro -->
-    <div class="modal fade" id="registroModal" tabindex="-1">
+    <div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="registroModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Registro en PurrfectPalate</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="registroModalLabel">Registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="registroForm">
                         <div class="mb-3">
-                            <label class="form-label">Correo Electrónico (Gmail)</label>
-                            <input type="email" class="form-control" name="email" required>
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" name="password" required>
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Confirmar Contraseña</label>
-                            <input type="password" class="form-control" name="confirmPassword" required>
+                            <label for="password" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Nombre de Usuario</label>
-                            <input type="text" class="form-control" name="nombre" required>
+                            <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Preferencias Alimenticias</label>
-                            <select class="form-select" name="preferencias" multiple>
-                                <option value="ninguna">Ninguna preferencia</option>
-                                <option value="vegano">Vegano</option>
-                                <option value="vegetariano">Vegetariano</option>
-                                <option value="sin-gluten">Sin Gluten</option>
-                            </select>
+                            <label class="form-label">Preferencias</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="preferencias" value="vegetariano">
+                                <label class="form-check-label">Vegetariano</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="preferencias" value="vegano">
+                                <label class="form-check-label">Vegano</label>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Alergias</label>
-                            <select class="form-select" name="alergias" multiple>
-                                <option value="ninguna">Ninguna alergia</option>
-                                <option value="lacteos">Lácteos</option>
-                                <option value="frutos-secos">Frutos Secos</option>
-                                <option value="mariscos">Mariscos</option>
-                            </select>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="alergias" value="lacteos">
+                                <label class="form-check-label">Lácteos</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="alergias" value="frutos-secos">
+                                <label class="form-check-label">Frutos Secos</label>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Registrarse</button>
                     </form>
@@ -115,19 +140,19 @@
         </div>
     </div>
 
-    <!-- Modal de Inicio de Sesión -->
-    <div class="modal fade" id="loginModal" tabindex="-1">
+    <!-- Modal de Login -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Iniciar Sesión en PurrfectPalate</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="loginModalLabel">Iniciar Sesión</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="loginForm">
                         <div class="mb-3">
-                            <label class="form-label">Correo Electrónico</label>
-                            <input type="email" class="form-control" name="email" required>
+                            <label for="loginEmail" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="loginEmail" name="email" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Contraseña</label>
